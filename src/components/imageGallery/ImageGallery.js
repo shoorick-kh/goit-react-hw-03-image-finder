@@ -4,8 +4,8 @@ import s from './ImageGallery.module.css';
 import { toast } from 'react-toastify';
 import ImageGalleryItem from '../imageGalleryItem/ImageGalleryItem';
 import Button from '../button/Button';
-import Spinner from 'react-spinner';
-// import Loader from '../loader/Loader';
+// import Spinner from 'react-spinner';
+import Loader from '../loader/Loader';
 
 export default class ImageGallery extends React.Component {
   state = {
@@ -58,7 +58,7 @@ export default class ImageGallery extends React.Component {
     const { images } = this.state;
     return (
       <>
-        {this.state.loading && <Spinner />}
+        {this.state.loading && <Loader />}
         {images && (
           <ul className={s.ImageGallery}>
             {images.map(image => (
@@ -71,7 +71,7 @@ export default class ImageGallery extends React.Component {
             ))}
           </ul>
         )}
-        {images % 12 !== 0 && <Button onClickMore={this.onClickMore} />}
+        {images.length >= 12 && <Button onClickMore={this.onClickMore} />}
       </>
     );
   }
