@@ -29,8 +29,14 @@ export default class Modal extends React.Component {
 
   render() {
     return createPortal(
-      <div className={s.backDrop} onClick={this.handleCloseModalOnClick}>
-        <div className={s.content}>{this.props.children}</div>
+      <div className={s.overlay} onClick={this.handleCloseModalOnClick}>
+        <div className={s.modal}>
+          <img
+            className={s.img}
+            src={this.props.imgURL}
+            alt={this.props.tags}
+          />
+        </div>
       </div>,
       modalRoot,
     );
