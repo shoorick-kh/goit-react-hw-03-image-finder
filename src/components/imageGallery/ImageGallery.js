@@ -4,62 +4,113 @@ import s from './ImageGallery.module.css';
 import { toast } from 'react-toastify';
 import ImageGalleryItem from '../imageGalleryItem/ImageGalleryItem';
 import Button from '../button/Button';
-// import Spinner from 'react-spinner';
 import Loader from '../loader/Loader';
+import fetchImage from '../services/fetchImage';
 
 export default class ImageGallery extends React.Component {
   state = {
     images: [],
-    loading: false,
-    page: null,
+    page: 1,
+    error: null,
+    status: 'idle',
+    hits: null,
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log(this.state.page);
-    if (prevProps.imageName !== this.props.imageName) {
-      this.setState({ page: 1 });
-    }
+  scrollPage = () => {
+    setTimeout(() => {
+      window.scrollBy({
+        top: document.documentElement.clientHeight - 100,
+        behavior: 'smooth',
+      });
+    }, 300);
+  };
 
-    if (
-      prevProps.imageName !== this.props.imageName ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({ loading: true });
-      fetch(
-        `https://pixabay.com/api/?q=${this.props.imageName}&page=${this.state.page}&key=24260489-c6ae81bdca94ae3f2fdf467ab&image_type=photo&orientation=horizontal&per_page=12`,
-      )
-        .then(res => res.json())
+  componentDidUpdate(prevProps) {
+    if (prevProps.imageName !== this.props.imageName) {
+      this.setState({ status: 'pending', page: 1 });
+      fetchImage(this.props.imageName, this.props.page)
         .then(images => {
           if (images.hits.length === 0) {
-            this.setState({ page: null });
+            this.setState({
+              page: 1,
+              images: [],
+              hits: images.hits,
+              status: 'resolved',
+            });
             return toast.error('No data on this request!');
           }
 
           if (this.state.page === 1) {
-            this.setState({ images: images.hits });
-          } else {
-            this.setState(prevState => {
-              return { images: [...prevState.images, ...images.hits] };
+            this.setState(state => ({ page: state.page + 1 }));
+            this.setState({
+              images: images.hits,
+              hits: images.hits,
+              status: 'resolved',
             });
           }
         })
-        .finally(this.setState({ loading: false }));
-      // .catch(toast.error('Error 404'));
+        .catch(error => this.setState({ error, status: 'rejected' }));
     }
+
+    this.scrollPage();
   }
 
   onClickMore = () => {
-    this.setState(state => ({ page: state.page + 1 }));
-    console.log(this.state.page);
-    console.log(this.state.images);
+    this.setState(state => ({ page: state.page + 1, status: 'pending' }));
+
+    fetchImage(this.props.imageName, this.state.page)
+      .then(images => {
+        if (images.hits.length === 0) {
+          this.setState({
+            images: [],
+            status: 'resolved',
+          });
+          return toast.error('No data on this request!');
+        }
+
+        this.setState(prevState => {
+          return {
+            images: [...prevState.images, ...images.hits],
+            hits: images.hits,
+            status: 'resolved',
+          };
+        });
+      })
+      .catch(error => this.setState({ error, status: 'rejected' }));
+
+    this.scrollPage();
   };
 
   render() {
-    const { images } = this.state;
-    return (
-      <>
-        {this.state.loading && <Loader />}
-        {images && (
+    const { images, error, status, hits } = this.state;
+
+    if (status === 'idle') {
+      return <></>;
+    }
+
+    if (status === 'pending') {
+      return (
+        <>
+          <ul className={s.loader__list}>
+            {images.map(image => (
+              <li key={image.id}>
+                <div className={s.loader_card}>
+                  <Loader />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      );
+    }
+
+    if (status === 'rejected') {
+      return <h2>{error.message}</h2>;
+    }
+
+    if (status === 'resolved') {
+      return (
+        <>
           <ul className={s.ImageGallery}>
             {images.map(image => (
               <ImageGalleryItem
@@ -70,13 +121,14 @@ export default class ImageGallery extends React.Component {
               />
             ))}
           </ul>
-        )}
-        {images.length >= 12 && <Button onClickMore={this.onClickMore} />}
-      </>
-    );
+          {hits.length === 12 && <Button onClickMore={this.onClickMore} />}
+        </>
+      );
+    }
   }
 }
 
 ImageGallery.propTypes = {
-  imageName: PropTypes.string,
+  imageName: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
 };

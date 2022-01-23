@@ -9,6 +9,7 @@ import Searchbar from './components/searchbar/Searchbar';
 export default class App extends React.Component {
   state = {
     imageName: '',
+    page: 1,
     largeImageURL: '',
     tags: '',
   };
@@ -22,7 +23,10 @@ export default class App extends React.Component {
       <>
         <div className={s.container}>
           <Searchbar onSubmitForm={this.handleFormSubmit} />
-          <ImageGallery imageName={this.state.imageName} />
+          <ImageGallery
+            imageName={this.state.imageName}
+            page={this.state.page}
+          />
           <ToastContainer autoClose={3000} />
         </div>
       </>
