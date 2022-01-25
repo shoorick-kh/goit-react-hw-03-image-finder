@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/goit-react-hw-03-image-finder/static/css/main.26685d93.css",
-    "main.js": "/goit-react-hw-03-image-finder/static/js/main.f12101f5.js",
+    "main.js": "/goit-react-hw-03-image-finder/static/js/main.7a375360.js",
     "static/media/material-icons-two-tone.woff": "/goit-react-hw-03-image-finder/static/media/material-icons-two-tone.862d6cd39626a9ddf097.woff",
     "static/media/material-icons-two-tone.woff2": "/goit-react-hw-03-image-finder/static/media/material-icons-two-tone.4cd0b540933d1628c224.woff2",
     "static/media/material-icons-round.woff": "/goit-react-hw-03-image-finder/static/media/material-icons-round.1d2975b71bddc932cb7e.woff",
@@ -14,10 +14,10 @@
     "static/media/material-icons.woff2": "/goit-react-hw-03-image-finder/static/media/material-icons.90170fbdd3dad451d44d.woff2",
     "index.html": "/goit-react-hw-03-image-finder/index.html",
     "main.26685d93.css.map": "/goit-react-hw-03-image-finder/static/css/main.26685d93.css.map",
-    "main.f12101f5.js.map": "/goit-react-hw-03-image-finder/static/js/main.f12101f5.js.map"
+    "main.7a375360.js.map": "/goit-react-hw-03-image-finder/static/js/main.7a375360.js.map"
   },
   "entrypoints": [
     "static/css/main.26685d93.css",
-    "static/js/main.f12101f5.js"
+    "static/js/main.7a375360.js"
   ]
 }
