@@ -13,7 +13,7 @@ export default class ImageGallery extends React.Component {
     page: 1,
     error: null,
     status: 'idle',
-    hits: null,
+    hits: [],
   };
 
   scrollPage = () => {
@@ -22,17 +22,16 @@ export default class ImageGallery extends React.Component {
         top: document.documentElement.clientHeight - 100,
         behavior: 'smooth',
       });
-    }, 300);
+    }, 1000);
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.imageName !== this.props.imageName) {
       this.setState({ status: 'pending', page: 1 });
       fetchImage(this.props.imageName, this.props.page)
         .then(images => {
           if (images.hits.length === 0) {
             this.setState({
-              page: 1,
               images: [],
               hits: images.hits,
               status: 'resolved',
@@ -40,14 +39,35 @@ export default class ImageGallery extends React.Component {
             return toast.error('No data on this request!');
           }
 
-          if (this.state.page === 1) {
-            this.setState(state => ({ page: state.page + 1 }));
+          this.setState({
+            images: images.hits,
+            hits: images.hits,
+            status: 'resolved',
+          });
+        })
+        .catch(error => this.setState({ error, status: 'rejected' }));
+    }
+
+    if (prevState.page !== this.state.page && this.state.page > 1) {
+      this.setState({ status: 'pending' });
+
+      fetchImage(this.props.imageName, this.state.page)
+        .then(images => {
+          if (images.hits.length === 0) {
             this.setState({
-              images: images.hits,
-              hits: images.hits,
+              images: [],
               status: 'resolved',
             });
+            return toast.error('No data on this request!');
           }
+
+          this.setState(prevState => {
+            return {
+              images: [...prevState.images, ...images.hits],
+              hits: images.hits,
+              status: 'resolved',
+            };
+          });
         })
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
@@ -56,29 +76,7 @@ export default class ImageGallery extends React.Component {
   }
 
   onClickMore = () => {
-    this.setState(state => ({ page: state.page + 1, status: 'pending' }));
-
-    fetchImage(this.props.imageName, this.state.page)
-      .then(images => {
-        if (images.hits.length === 0) {
-          this.setState({
-            images: [],
-            status: 'resolved',
-          });
-          return toast.error('No data on this request!');
-        }
-
-        this.setState(prevState => {
-          return {
-            images: [...prevState.images, ...images.hits],
-            hits: images.hits,
-            status: 'resolved',
-          };
-        });
-      })
-      .catch(error => this.setState({ error, status: 'rejected' }));
-
-    this.scrollPage();
+    this.setState(state => ({ page: state.page + 1 }));
   };
 
   render() {
@@ -89,38 +87,29 @@ export default class ImageGallery extends React.Component {
     }
 
     if (status === 'pending') {
-      return (
-        <>
-          <ul className={s.loader__list}>
-            {images.map(image => (
-              <li key={image.id}>
-                <div className={s.loader_card}>
-                  <Loader />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </>
-      );
+      return <></>;
     }
 
     if (status === 'rejected') {
       return <h2>{error.message}</h2>;
     }
 
-    if (status === 'resolved') {
+    if (status === 'resolved' || status === 'pending') {
       return (
         <>
-          <ul className={s.ImageGallery}>
-            {images.map(image => (
-              <ImageGalleryItem
-                key={image.id}
-                imageURL={image.webformatURL}
-                largeImageURL={image.largeImageURL}
-                alt={image.tags}
-              />
-            ))}
-          </ul>
+          {status === 'resolved' && (
+            <ul className={s.ImageGallery}>
+              {images.map(image => (
+                <ImageGalleryItem
+                  key={image.id}
+                  imageURL={image.webformatURL}
+                  largeImageURL={image.largeImageURL}
+                  alt={image.tags}
+                />
+              ))}
+            </ul>
+          )}
+          {/* {status === 'pending' && <Loader />} */}
           {hits.length === 12 && <Button onClickMore={this.onClickMore} />}
         </>
       );
