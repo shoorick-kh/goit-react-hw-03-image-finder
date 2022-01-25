@@ -4,7 +4,12 @@ import s from './Button.module.css';
 
 export default function Button({ onClickMore }) {
   return (
-    <button className={s.Button} type="button" onClick={onClickMore}>
+    <button
+      className={s.Button}
+      type="button"
+      id="scroll"
+      onClick={onClickMore}
+    >
       Load more
     </button>
   );

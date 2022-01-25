@@ -68,15 +68,10 @@ export default class ImageGallery extends React.Component {
 
   scrollPage = () => {
     setTimeout(() => {
-      window.scrollBy(
-        {
-          top: window.innerHeight,
-          // document.documentElement.clientHeight - 100,
-          behavior: 'smooth',
-        },
-        // 0,
-        // window.innerHeight,
-      );
+      window.scrollBy({
+        top: document.documentElement.clientHeight + 10000,
+        behavior: 'smooth',
+      });
     }, 1000);
   };
 
