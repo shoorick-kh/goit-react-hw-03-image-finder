@@ -16,15 +16,6 @@ export default class ImageGallery extends React.Component {
     hits: [],
   };
 
-  scrollPage = () => {
-    setTimeout(() => {
-      window.scrollBy({
-        top: document.documentElement.clientHeight - 100,
-        behavior: 'smooth',
-      });
-    }, 1000);
-  };
-
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.imageName !== this.props.imageName) {
       this.setState({ status: 'pending', page: 1 });
@@ -75,6 +66,20 @@ export default class ImageGallery extends React.Component {
     this.scrollPage();
   }
 
+  scrollPage = () => {
+    setTimeout(() => {
+      window.scrollBy(
+        {
+          top: window.innerHeight,
+          // document.documentElement.clientHeight - 100,
+          behavior: 'smooth',
+        },
+        // 0,
+        // window.innerHeight,
+      );
+    }, 1000);
+  };
+
   onClickMore = () => {
     this.setState(state => ({ page: state.page + 1 }));
   };
@@ -83,10 +88,6 @@ export default class ImageGallery extends React.Component {
     const { images, error, status, hits } = this.state;
 
     if (status === 'idle') {
-      return <></>;
-    }
-
-    if (status === 'pending') {
       return <></>;
     }
 
@@ -109,7 +110,7 @@ export default class ImageGallery extends React.Component {
               ))}
             </ul>
           )}
-          {/* {status === 'pending' && <Loader />} */}
+          {status === 'pending' && <Loader />}
           {hits.length === 12 && <Button onClickMore={this.onClickMore} />}
         </>
       );
