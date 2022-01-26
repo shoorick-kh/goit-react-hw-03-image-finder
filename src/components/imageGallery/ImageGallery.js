@@ -69,10 +69,10 @@ export default class ImageGallery extends React.Component {
   scrollPage = () => {
     setTimeout(() => {
       window.scrollBy({
-        top: document.documentElement.clientHeight + 10000,
+        top: document.documentElement.clientHeight + 5000,
         behavior: 'smooth',
       });
-    }, 1000);
+    }, 200);
   };
 
   onClickMore = () => {
@@ -93,18 +93,17 @@ export default class ImageGallery extends React.Component {
     if (status === 'resolved' || status === 'pending') {
       return (
         <>
-          {status === 'resolved' && (
-            <ul className={s.ImageGallery}>
-              {images.map(image => (
-                <ImageGalleryItem
-                  key={image.id}
-                  imageURL={image.webformatURL}
-                  largeImageURL={image.largeImageURL}
-                  alt={image.tags}
-                />
-              ))}
-            </ul>
-          )}
+          <ul className={s.ImageGallery}>
+            {images.map(image => (
+              <ImageGalleryItem
+                key={image.id}
+                imageURL={image.webformatURL}
+                largeImageURL={image.largeImageURL}
+                alt={image.tags}
+              />
+            ))}
+          </ul>
+
           {status === 'pending' && <Loader />}
           {hits.length === 12 && <Button onClickMore={this.onClickMore} />}
         </>
